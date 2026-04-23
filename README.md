@@ -36,6 +36,7 @@ A full-stack web application to help students track their university modules, st
 ### 1. Clone repository
 
 git clone https://github.com/Eminbriki/Notes-app.git
+
 cd Notes-app .
 
 ### 2. Create virtual environment 
