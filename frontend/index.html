@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semester Module Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+      --success-bg: #dcfce7;
+      --success-text: #166534;
+      --warning-bg: #fef3c7;
+      --warning-text: #92400e;
+      --border: #e5e7eb;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+      --urgent-border: #f59e0b;
+      --urgent-bg: #fff7ed;
+    }
+
+    body.dark {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --border: #374151;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --warning-bg: #3f2d14;
+      --warning-text: #fbbf24;
+      --success-bg: #123524;
+      --success-text: #86efac;
+      --urgent-bg: #2a1c08;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 180px);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    body.dark {
+      background: linear-gradient(180deg, #111827 0%, var(--bg) 180px);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text h1 {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+      line-height: 1.1;
+    }
+
+    .hero-text p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 700px;
+      line-height: 1.6;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 1.9rem;
+      font-weight: 700;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      border: 1px solid var(--border);
+    }
+
+    .panel h2 {
+      margin: 0 0 18px;
+      font-size: 1.2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.97rem;
+      outline: none;
+      background: var(--card);
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+      flex: 1;
+    }
+
+    .primary-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary-btn {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .secondary-btn:hover {
+      background: #e0e7ff;
+    }
+
+    body.dark .secondary-btn {
+      background: #1f2937;
+      color: #dbeafe;
+    }
+
+    .modules-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box,
+    .sort-box {
+      min-width: 180px;
+    }
+
+    .search-box input,
+    .sort-box select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      outline: none;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .modules-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .module-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      background: var(--card);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .module-card.urgent {
+      border: 2px solid var(--urgent-border);
+      background: var(--urgent-bg);
+    }
+
+    .module-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .module-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .module-meta {
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    .status-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .passed {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .not-passed {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .info-card {
+      background: rgba(249, 250, 251, 0.7);
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+
+    body.dark .info-card {
+      background: rgba(17, 24, 39, 0.6);
+    }
+
+    .info-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    .progress-wrap {
+      margin-top: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    body.dark .progress-bar-bg {
+      background: #374151;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      border-radius: 999px;
+    }
+
+    .module-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .edit-btn {
+      background: #0f766e;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #115e59;
+    }
+
+    .delete-btn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-dark);
+    }
+
+    .empty-state {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--muted);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      background: transparent;
+    }
+
+    .form-mode {
+      font-size: 0.95rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 980px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-text h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Semester Module Tracker</h1>
+        <p>
+          Track your modules, semester goals, exam dates, study progress,
+          notes, and final outcomes in one dashboard.
+        </p>
+      </div>
+
+      <div class="top-actions">
+        <div class="hero-badge">Student Dashboard</div>
+        <button class="secondary-btn" id="darkModeButton">Toggle Dark Mode</button>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Modules</div>
+        <div class="stat-value" id="totalModules">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average Progress</div>
+        <div class="stat-value" id="avgProgress">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Passed Modules</div>
+        <div class="stat-value" id="passedModules">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Upcoming Exams</div>
+        <div class="stat-value" id="upcomingExams">0</div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="panel">
+        <h2 id="formTitle">Add New Module</h2>
+        <div class="form-mode" id="formMode">Create mode</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Module Name</label>
+            <input type="text" id="name" placeholder="e.g. Databases" />
+          </div>
+
+          <div class="form-group">
+            <label for="goal">Semester Goal</label>
+            <input type="text" id="goal" placeholder="e.g. Finish all sheets and aim for 1.7" />
+          </div>
+
+          <div class="form-group">
+            <label for="exam_date">Exam Date</label>
+            <input type="date" id="exam_date" />
+          </div>
+
+          <div class="form-group">
+            <label for="progress">Progress (%)</label>
+            <input type="number" id="progress" min="0" max="100" placeholder="0 - 100" />
+          </div>
+
+          <div class="form-group">
+            <label for="passed">Status</label>
+            <select id="passed">
+              <option value="false">Not Passed Yet</option>
+              <option value="true">Passed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Study plan, weak topics, reminders..."></textarea>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="primary-btn" id="saveButton">Add Module</button>
+          <button class="secondary-btn" id="clearButton">Clear</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="modules-header">
+          <h2 style="margin: 0;">Your Modules</h2>
+
+          <div class="toolbar">
+            <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Search module..." />
+            </div>
+
+            <div class="sort-box">
+              <select id="sortSelect">
+                <option value="exam_asc">Sort: Exam Date ↑</option>
+                <option value="exam_desc">Sort: Exam Date ↓</option>
+                <option value="progress_desc">Sort: Progress ↓</option>
+                <option value="progress_asc">Sort: Progress ↑</option>
+                <option value="name_asc">Sort: Name A-Z</option>
+                <option value="name_desc">Sort: Name Z-A</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modules-list" id="modulesList"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000";
+    let allModules = [];
+    let editingModuleId = null;
+
+    function clearForm() {
+      document.getElementById("name").value = "";
+      document.getElementById("goal").value = "";
+      document.getElementById("exam_date").value = "";
+      document.getElementById("progress").value = "";
+      document.getElementById("notes").value = "";
+      document.getElementById("passed").value = "false";
+      editingModuleId = null;
+      document.getElementById("formTitle").textContent = "Add New Module";
+      document.getElementById("formMode").textContent = "Create mode";
+      document.getElementById("saveButton").textContent = "Add Module";
+    }
+
+    function updateStats(modules) {
+      const total = modules.length;
+      const passed = modules.filter(m => m.passed).length;
+
+      const avg = total === 0
+        ? 0
+        : Math.round(modules.reduce((sum, m) => sum + Number(m.progress || 0), 0) / total);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const upcoming = modules.filter(m => {
+        if (!m.exam_date || m.passed) return false;
+        const exam = new Date(m.exam_date);
+        return exam >= today;
+      }).length;
+
+      document.getElementById("totalModules").textContent = total;
+      document.getElementById("avgProgress").textContent = `${avg}%`;
+      document.getElementById("passedModules").textContent = passed;
+      document.getElementById("upcomingExams").textContent = upcoming;
+    }
+
+    function isUrgentExam(examDate, passed) {
+      if (!examDate || passed) return false;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const exam = new Date(examDate);
+      const diffMs = exam - today;
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+      return diffDays >= 0 && diffDays <= 14;
+    }
+
+    function renderModules(modules) {
+      const modulesList = document.getElementById("modulesList");
+      modulesList.innerHTML = "";
+
+      if (modules.length === 0) {
+        modulesList.innerHTML = `
+          <div class="empty-state">
+            No modules found. Add your first module to start tracking your semester.
+          </div>
+        `;
+        return;
+      }
+
+      modules.forEach(module => {
+        const card = document.createElement("div");
+        const urgent = isUrgentExam(module.exam_date, module.passed);
+        card.className = urgent ? "module-card urgent" : "module-card";
+
+        const statusClass = module.passed ? "passed" : "not-passed";
+        const statusText = module.passed ? "Passed" : "In Progress";
+        const urgentText = urgent ? " • Urgent exam soon" : "";
+
+        card.innerHTML = `
+          <div class="module-top">
+            <div>
+              <div class="module-name">${module.name}</div>
+              <div class="module-meta">Exam Date: ${module.exam_date || "Not set"}${urgentText}</div>
+            </div>
+            <div class="status-pill ${statusClass}">${statusText}</div>
+          </div>
+
+          <div class="module-grid">
+            <div class="info-card">
+              <strong>Semester Goal</strong>
+              <div>${module.goal}</div>
+            </div>
+
+            <div class="info-card">
+              <strong>Progress</strong>
+              <div class="progress-wrap">${module.progress}% completed</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${module.progress}%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <strong>Notes</strong>
+            <div>${module.notes ? module.notes : "No notes added yet."}</div>
+          </div>
+
+          <div class="module-actions">
+            <button class="edit-btn" onclick="startEdit(${module.id})">Edit</button>
+            <button class="delete-btn" onclick="deleteModule(${module.id})">Delete</button>
+          </div>
+        `;
+
+        modulesList.appendChild(card);
+      });
+    }
+
+    function applySearchAndSort() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const sortValue = document.getElementById("sortSelect").value;
+
+      let filtered = allModules.filter(module =>
+        module.name.toLowerCase().includes(query)
+      );
+
+      filtered.sort((a, b) => {
+        if (sortValue === "exam_asc") return a.exam_date.localeCompare(b.exam_date);
+        if (sortValue === "exam_desc") return b.exam_date.localeCompare(a.exam_date);
+        if (sortValue === "progress_desc") return b.progress - a.progress;
+        if (sortValue === "progress_asc") return a.progress - b.progress;
+        if (sortValue === "name_asc") return a.name.localeCompare(b.name);
+        if (sortValue === "name_desc") return b.name.localeCompare(a.name);
+        return 0;
+      });
+
+      renderModules(filtered);
+    }
+
+    async function loadModules() {
+      try {
+        const response = await fetch(`${API_URL}/modules`);
+        const modules = await response.json();
+
+        allModules = modules;
+        updateStats(allModules);
+        applySearchAndSort();
+      } catch (error) {
+        console.error("Error loading modules:", error);
+        alert("Could not load modules. Make sure the backend is running.");
+      }
+    }
+
+    function collectFormData() {
+      const name = document.getElementById("name").value.trim();
+      const goal = document.getElementById("goal").value.trim();
+      const examDate = document.getElementById("exam_date").value;
+      const progress = parseInt(document.getElementById("progress").value);
+      const notes = document.getElementById("notes").value.trim();
+      const passed = document.getElementById("passed").value === "true";
+
+      if (!name || !goal || !examDate || isNaN(progress)) {
+        alert("Please fill in all required fields.");
+        return null;
+      }
+
+      if (progress < 0 || progress > 100) {
+        alert("Progress must be between 0 and 100.");
+        return null;
+      }
+
+      return {
+        name: name,
+        goal: goal,
+        exam_date: examDate,
+        progress: progress,
+        notes: notes,
+        passed: passed
+      };
+    }
+
+    async function saveModule() {
+      const data = collectFormData();
+      if (!data) return;
+
+      try {
+        let response;
+
+        if (editingModuleId === null) {
+          response = await fetch(`${API_URL}/modules`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+        } else {
+          response = await fetch(`${API_URL}/modules/${editingModuleId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error("Save failed");
+        }
+
+        clearForm();
+        loadModules();
+      } catch (error) {
+        console.error("Error saving module:", error);
+        alert("Could not save module.");
+      }
+    }
+
+    function startEdit(moduleId) {
+      const module = allModules.find(m => m.id === moduleId);
+      if (!module) return;
+
+      editingModuleId = module.id;
+      document.getElementById("name").value = module.name;
+      document.getElementById("goal").value = module.goal;
+      document.getElementById("exam_date").value = module.exam_date;
+      document.getElementById("progress").value = module.progress;
+      document.getElementById("notes").value = module.notes || "";
+      document.getElementById("passed").value = module.passed ? "true" : "false";
+
+      document.getElementById("formTitle").textContent = "Edit Module";
+      document.getElementById("formMode").textContent = `Editing: ${module.name}`;
+      document.getElementById("saveButton").textContent = "Update Module";
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function deleteModule(moduleId) {
+      try {
+        const response = await fetch(`${API_URL}/modules/${moduleId}`, {
+          method: "DELETE"
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete module");
+        }
+
+        if (editingModuleId === moduleId) {
+          clearForm();
+        }
+
+        loadModules();
+      } catch (error) {
+        console.error("Error deleting module:", error);
+        alert("Could not delete module.");
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    }
+
+    function loadDarkModePreference() {
+      const darkMode = localStorage.getItem("darkMode");
+      if (darkMode === "true") {
+        document.body.classList.add("dark");
+      }
+    }
+
+    document.getElementById("saveButton").addEventListener("click", saveModule);
+    document.getElementById("clearButton").addEventListener("click", clearForm);
+    document.getElementById("searchInput").addEventListener("input", applySearchAndSort);
+    document.getElementById("sortSelect").addEventListener("change", applySearchAndSort);
+    document.getElementById("darkModeButton").addEventListener("click", toggleDarkMode);
+
+    loadDarkModePreference();
+    loadModules();
+  </script>
+</body>
+</html>
