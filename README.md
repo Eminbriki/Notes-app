@@ -21,7 +21,7 @@ A full-stack web application to help students track their university modules, st
 ## 🛠️ Tech Stack
 
 ### Backend
-- FastAPI (Python)
+- FastAPI
 - SQLite
 
 ### Frontend
